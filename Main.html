@@ -1,0 +1,973 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script type="module" src="path/to/firebaseInit.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>For My Lablab 💖</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Playfair+Display:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  
+   <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom, #000000 0%, #0a0a0a 30%, #6e45e2 100%);
+            background-attachment: fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: 'Playfair Display', serif;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Night sky overlay */
+        .night-sky {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 1;
+        }
+
+        .container {
+            background: black; /* Initial background color */
+            padding: 30px;
+            width: 200px;
+            height: 120px;
+            margin: auto;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-5deg);
+            text-align: center;
+            z-index: 2;
+            border: 6px double #b27fd6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.5s ease;
+            overflow: hidden;
+        }
+
+        .container:hover {
+            width: 800px;  
+            height: 600px; 
+            padding: 50px 30px;
+            transform: translate(-50%, -50%) rotate(0deg);
+            background: linear-gradient(to bottom, #000000, #434343); /* Black gradient on hover */
+        }
+
+        .container:hover .hidden-content {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .hidden-content {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+        }
+
+        .congrats-text {
+            font-size: 2rem;
+            color: #fff;
+            font-family: 'Dancing Script', cursive;
+            position: absolute;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover .congrats-text {
+            opacity: 0;
+            visibility: hidden;
+        }
+
+        h1 {
+            color: #c78bd6;
+            margin-bottom: 20px;
+            font-family: 'Dancing Script', cursive;
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            font-weight: 700;
+        }
+
+        #romanticMessages {
+            font-size: 1.4rem;
+            color: #d197e6;
+            margin-bottom: 25px;
+            min-height: 80px;
+            letter-spacing: 1px;
+            line-height: 1.6;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .image-wrapper {
+            margin: 0 auto;
+            max-width: 400px;
+            overflow: hidden; /* To round the corners of the image */
+            position: relative;
+            display: inline-block;
+            perspective: 1000px; /* Add perspective for 3D effect */
+        }
+
+        .image-3d {
+            width: 90%; /* Set width to 90% of the container */
+            height: auto; /* Maintain aspect ratio */
+            max-height: 400px; /* Set a maximum height */
+            border-radius: 15px;
+            margin-bottom: 30px;
+            border: 2px solid #b27fd6;
+            box-sizing: border-box;
+            display: block;
+            outline: 2px solid black; /* Added black outline */
+            transition: transform 0.5s; /* Smooth transition for transform */
+        }
+
+        .image-3d:hover {
+            transform: rotateY(15deg) rotateX(15deg); /* 3D rotation effect */
+        }
+
+        .change-btn {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            background-color: rgba(178, 127, 214, 0.8);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .change-btn:hover {
+            background-color: #9e6ccc;
+            transform: scale(1.05);
+        }
+
+        .button-group {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 6px;
+            z-index: 1000;
+            background: rgba(0,0,0,0.3);
+            padding: 6px 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .hearts-container, .images-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .falling-image {
+            position: absolute;
+            width: 100px; /* Increased size for falling images */
+            height: 100px; /* Increased size for falling images */
+            object-fit: cover;
+            border-radius: 5px;
+            animation: imageFall linear forwards;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            outline: 2px solid black; /* Added black outline */
+        }
+
+        .popping-image {
+            position: absolute;
+            max-width: 200px;
+            max-height: 200px;
+            width: auto;
+            height: auto;
+            border-radius: 10%;
+            object-fit: contain;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.3));
+            cursor: pointer;
+            transform: scale(0);
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .popping-image.visible {
+            transform: scale(1) rotate(0deg);
+            opacity: 1;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* Stars */
+        .star {
+            position: absolute;
+            background-color: white;
+            border-radius: 50%;
+            animation: twinkle var(--duration, 5s) infinite ease-in-out;
+            opacity: 0;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0; transform: scale(1); }
+            20% { opacity: var(--opacity, 0.8); transform: scale(1.1); }
+            50% { opacity: 0.4; transform: scale(1); }
+            70% { opacity: var(--opacity, 0.9); transform: scale(1.05); }
+            100% { opacity: 0; transform: scale(1); }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: scale(1) translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: scale(1.05) translateY(-10px) rotate(5deg);
+            }
+        }
+
+        .info {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
+        @keyframes imageFall {
+            0% {
+                transform: translateY(-100px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .heart {
+            position: absolute;
+            width: 80px; /* Set width to 80px */
+            height: 80px; /* Set height to 80px */
+            animation: fall linear forwards;
+            user-select: none;
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-50px) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .flower {
+            position: absolute;
+            font-size: 24px;
+            animation: float linear forwards;
+            user-select: none;
+            bottom: 0; /* Position at the bottom */
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+        }
+
+        .play-button {
+            margin-right: 10px;
+        }
+
+        @media (max-width: 600px) {
+            #Images {
+                border-width: 1.5px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            #Images {
+                border-width: 1px;
+                border-radius: 10px;
+            }
+        }
+
+        /* Starry background */
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: white;
+            opacity: 0.8;
+            animation: twinkle 1.5s infinite alternate;
+        }
+
+        @keyframes twinkle {
+            0% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #catcher {
+            position: fixed;
+            width: 100px;
+            height: 100px;
+            cursor: pointer;
+            z-index: 10;
+            background-image: url('images/Basket.png');
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            transition: transform 0.1s ease;
+            left: 30px; /* Position on the left bottom corner */
+            bottom: 30px;
+        }
+                .basket-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 10;
+            display: block;
+            padding: 10px 20px;
+            background-color: transparent;
+            color: white;
+            cursor: pointer;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        .falling-number {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: 5;
+            user-select: none;
+            animation: fall linear;
+        }
+
+        @keyframes fall {
+            0% { transform: translateY(-100px) rotate(0deg); }
+            100% { transform: translateY(100vh) rotate(180deg); }
+        }
+
+        #reward-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .reward-content {
+            background: rgba(30, 0, 60, 0.5);
+            padding: 40px;
+            border-radius: 16px;
+            text-align: center;
+            max-width: 600px;
+            position: relative;
+            overflow: hidden;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.6s ease-out;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(183, 82, 255, 0.5);
+            box-shadow: 
+                0 0 40px rgba(183, 82, 255, 0.3),
+                0 0 100px rgba(183, 82, 255, 0.15) inset;
+        }
+
+        .reward-content.show {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .secret-message {
+            font-size: 2rem;
+            font-family: 'Dancing Script', cursive;
+            padding: 40px;
+            transition: all 0.3s ease;
+        }
+
+        .media-container {
+            display: none;
+                      font-family: 'Dancing Script', cursive;
+        }
+
+        .reward-content:hover .secret-message {
+            display: none;
+        }
+
+        .reward-content:hover .media-container {
+            display: block;
+        }
+
+        .reward-video {
+            width: 100%;
+            border: 4px solid #9b59b6;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        #sequence-display {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            font-size: 1.2em;
+            z-index: 10;
+            display: none; /* Initially hidden */
+        }
+
+        .close-btn {
+            margin-top: 10px;
+        }
+
+        .sequence-card {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    font-size: 1.2em;
+    z-index: 10;
+    display: none; /* Initially hidden */
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+    color: #fff; /* Text color */
+    padding: 15px 20px; /* Padding for the card */
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); /* Shadow for depth */
+    backdrop-filter: blur(10px); /* Blur effect for background */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* Light border */
+    transition: all 0.3s ease; /* Smooth transition */
+}
+
+.sequence-card.show {
+    display: block; /* Show the card when needed */
+}
+
+    </style>
+</head>
+<body>
+    <!-- Animation containers -->
+    <div class="hearts-container"></div>
+    <div class="images-container"></div>
+    <div id="game-container"></div>
+
+    <!-- Main content container -->
+    <div class="container">
+        <div class="congrats-text">Congrats!</div>
+
+        <div class="hidden-content">
+            <h1>For My Lablab 💖</h1>
+            <p id="romanticMessages">
+                Congrats! on finishing your course and graduating nursing I'm proud of you always! 
+                <br><br>
+                You are the love of my life, my one and only, my Lablab!
+            </p>
+
+            <div class="image-wrapper">
+                <img id="Images" class="image-3d" src="images/1.jpg" alt="My Lablab" />
+            </div>
+
+            <div>
+                <audio id="backgroundAudio" loop>
+                    <source src="Audio/Kiss Me.mp3" type="audio/mpeg">
+                    <source src="Audio/Serendipity.mp3" type="audio/mp3">
+                    <source src="Audio/Understand.mp3" type="audio/mp3">
+                    <source src="Audio/WITHOUT YOU.mp3" type="audio/mp3">
+                    <source src="Audio/You&I.mp3" type="audio/mp3">
+                    Your browser does not support the audio tag.
+                </audio>
+            </div>
+
+            <button id="changeButton" class="change-btn">Click Meeeeeeee Pls💖</button>
+
+            
+        </div>
+    </div>
+
+    <!-- Music Controls - Fixed in Top Right -->
+    <div class="button-group">
+        <button id="playPauseButton" class="change-btn">▶️</button>
+        <button id="nextButton" class="change-btn">⏭️</button>
+    </div>
+
+
+ <!-- Sequence Display -->
+<div id="sequence-display" class="sequence-card">Sequence: Waiting for 1</div>
+
+
+    <!-- Basket button -->
+    <button id="catcher" class="basket-button"></button>
+
+    <div id="reward-modal">
+        <div class="reward-content">
+            <div class="secret-message"> SECRET MESSAGE </div>
+            <div class="media-container">
+                <h2> Here is my secret message for you Lablab! </h2>
+                <video class="reward-video" controls loop>
+                    <source src="video/vidforMae.mp4" type="video/mp4">
+                </video>
+
+</audio>
+
+            </div>
+            <button class="close-btn" onclick="closeReward()">Close</button>
+        </div>
+    </div>
+
+
+  <script>
+    const audioSources = [
+      "Audio/Kiss Me.mp3",
+      "Audio/Serendipity.mp3",
+      "Audio/Understand.mp3",
+      "Audio/WITHOUT YOU.mp3",
+      "Audio/You&I.mp3"
+    ];
+
+    const romanticMessages = [
+      "Mahal na mahal kita Lablab 💖",
+      "I miss you so much 💞",
+      "Thanks for loving me and being there for me in times of kailangan kita 🌟",
+      "Sana biyayaan ka ng Diyos ng maraming blessing at protektahan ka niya, pati na ang Family natin💓",
+      "Ikaw lang pipiliin ko💫",
+      "I'm sorry for being Hard and for being such a pain in the ass 😘",
+      "We're gonna be together Until the end, tulad ng nakikita nating future na tayo ay hanggang dulo💕",
+      "I hope na kayanin natin hanggang dulo💍",
+      "You show me the meaning of Love, sa mga araw na hindi ko maintindihan ano ba ito...💖",
+      "With you, every moment is special ✨",
+      "One call away kita palagi, I'll be here for you always📱📌",
+      "Puro man tayo away, You always make my day shine.🌞",
+      "When I'm with you, everything feels right 🌸",
+      "You complete me in every way possible 💑",
+      "I can't wait to grow old with you, Lablab 🥰",
+      "Just thinking of you makes me smile 😁",
+      "You bring joy into my life, my angel 😇",
+      "You're the reason I wake up every morning with a smile 😊",
+      "The way you love me is beyond perfect 💖",
+      "You are my heart, my soul, my everything 🧡",
+      "God will guide us unto forever and we will put out all of our faith into it👯",
+      "You're my dream come true 🌟",
+      "Every moment spent with you is a blessing 🙏",
+      "You're my happiness, my Lablab 🌸",
+      "You make my world so much more beautiful 💕"
+    ];
+
+    const imageSlots = [
+      "images/1.jpg", "images/2.jpg", "images/3.jpg", "images/4.jpg", 
+      "images/5.jpg", "images/6.jpg", "images/7.jpg", "images/8.jpg", 
+      "images/9.jpg", "images/10.jpg", "images/11.jpg", "images/12.jpg", 
+      "images/13.jpg", "images/14.jpg", "images/15.jpg", "images/16.jpg", 
+      "images/17.jpeg", "images/18.jpg", "images/19.jpg", "images/20.jpg", 
+      "images/21.jpg", "images/22.jpg", "images/23.jpg", "images/24.jpg", 
+      "images/25.jpg", "images/26.jpeg"
+    ];
+
+    function playRandomAudio() {
+      const backgroundAudio = document.getElementById('backgroundAudio');
+      const randomIndex = Math.floor(Math.random() * audioSources.length);
+      backgroundAudio.src = audioSources[randomIndex];
+      backgroundAudio.play();
+    }
+
+    window.onload = function() {
+      playRandomAudio();
+    };
+
+    document.getElementById("playPauseButton").addEventListener("click", function() {
+      const audioElement = document.getElementById("backgroundAudio");
+      if (audioElement.paused) {
+        audioElement.play();
+        this.textContent = "Pause";
+      } else {
+        audioElement.pause();
+        this.textContent = "Play";
+      }
+    });
+
+    document.getElementById("nextButton").addEventListener("click", function() {
+      playRandomAudio();
+    });
+
+    function changeContent() {
+      const messageElement = document.getElementById("romanticMessages");
+      const randomMessage = romanticMessages[Math.floor(Math.random() * romanticMessages.length)];
+      messageElement.textContent = randomMessage;
+
+      const imgElement = document.getElementById("Images");
+      const randomImage = imageSlots[Math.floor(Math.random() * imageSlots.length)];
+      imgElement.src = randomImage;
+    }
+
+    document.getElementById("changeButton").addEventListener("click", changeContent);
+
+    // Falling hearts animation
+    function createFallingHeart() {
+      const heartsContainer = document.querySelector(".hearts-container");
+      const heart = document.createElement("img");
+      heart.src = "images/hearts.png"; // Use the Heart.png image
+      heart.classList.add("heart"); // Use the existing class for styling
+
+      // Set random size for the heart
+      const randomSize = Math.random() * (100 - 50) + 50; // Random size between 50px and 100px
+      heart.style.width = `${randomSize}px`;
+      heart.style.height = `${randomSize}px`;
+
+      heart.style.left = `${Math.random() * 100}vw`;
+      heart.style.animationDuration = `${3 + Math.random() * 3}s`;
+      heartsContainer.appendChild(heart);
+
+      // Remove heart after animation completes
+      setTimeout(() => {
+        heart.remove();
+      }, 7000);
+    }
+
+    // Floating flowers animation
+    function createFloatingFlower() {
+      const heartsContainer = document.querySelector(".hearts-container");
+      const flower = document.createElement("div");
+      flower.classList.add("flower");
+
+      const emojis = ["🌹", "🌸", "🌺", "🌼"];
+      const colors = ["#ff69b4", "#ff6f91", "#ffc3a0", "#c084fc", "#f48fb1"];
+
+      flower.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+      flower.style.color = colors[Math.floor(Math.random() * colors.length)];
+      flower.style.left = `${Math.random() * 100}vw`;
+      flower.style.animationDuration = `${3 + Math.random() * 3}s`;
+      flower.style.fontSize = `${25 + Math.random() * 15}px`;
+      flower.style.bottom = "0"; // Position at the bottom
+      heartsContainer.appendChild(flower);
+
+      // Remove flower after animation completes
+      setTimeout(() => {
+        flower.remove();
+      }, 7000);
+    }
+
+// Falling images animation
+function createFallingImage() {
+  const imagesContainer = document.querySelector(".images-container");
+  const image = document.createElement("img");
+  const randomImage = imageSlots[Math.floor(Math.random() * imageSlots.length)];
+  image.src = randomImage;
+  image.classList.add("falling-image");
+
+  image.style.left = `${Math.random() * 100}vw`;
+  image.style.animationDuration = `${3 + Math.random() * 3}s`;
+  imagesContainer.appendChild(image);
+
+  // Remove image after animation completes
+  setTimeout(() => {
+    image.remove();
+  }, 7000);
+}
+
+// Start creating falling hearts, floating flowers, and falling images
+setInterval(createFallingHeart, 200); // More frequent heart creation
+setInterval(createFloatingFlower, 500);
+setInterval(createFallingImage, 2000); // Reduced frequency for falling images
+
+// Initial call to create some animations immediately
+for (let i = 0; i < 10; i++) { // Reduced number of initial falling images
+  createFallingImage();
+}
+
+
+    // Initial call to create some animations immediately
+    for (let i = 0; i < 15; i++) {
+      createFallingHeart();
+    }
+    for (let i = 0; i < 5; i++) {
+      createFloatingFlower();
+    }
+
+       
+        const images = [{ 
+            src: "images/Ily.png", 
+            alt: "Ily image popping animation"
+        }];
+
+        function getRandomPosition() {
+            const buffer = 200;
+            return {
+                x: Math.random() * (window.innerWidth - buffer * 2) + buffer,
+                y: Math.random() * (window.innerHeight - buffer * 2) + buffer
+            }
+        }
+
+        function createPoppingImage() {
+            const randomImg = images[Math.floor(Math.random() * images.length)];
+            const pos = getRandomPosition();
+            
+            const img = document.createElement('img');
+            img.onload = function() {
+                // Scale down if image is larger than max dimensions
+                if (this.naturalWidth > 200 || this.naturalHeight > 200) {
+                    const ratio = Math.min(200/this.naturalWidth, 200/this.naturalHeight);
+                    this.style.width = (this.naturalWidth * ratio) + 'px';
+                    this.style.height = (this.naturalHeight * ratio) + 'px';
+                }
+            };
+            img.src = randomImg.src;
+            img.alt = randomImg.alt;
+            img.className = 'popping-image';
+            img.style.left = `${pos.x}px`;
+            img.style.top = `${pos.y}px`;
+            
+            document.body.appendChild(img);
+            
+            // Start popping in
+            setTimeout(() => {
+                img.classList.add('visible');
+                
+                // Random time between 1-3 seconds before popping out
+                const visibleTime = 1000 + Math.random() * 2000;
+                
+                setTimeout(() => {
+                    img.classList.remove('visible');
+                    
+                    // Remove element after animation completes
+                    setTimeout(() => {
+                        img.remove();
+                    }, 400);
+                    
+                }, visibleTime);
+            }, 50);
+        }
+
+        // Start the random popping cycle
+        function startPoppingCycle() {
+            // First image pops immediately
+            setTimeout(createPoppingImage, 0);
+            
+            // Set interval for continuous popping
+            const popInterval = setInterval(() => {
+                createPoppingImage();
+            }, 800); // Slightly more frequent than the disappearance
+        }
+
+        // Kick things off
+        startPoppingCycle();
+
+        // Set static background color
+        document.body.style.backgroundColor = "#121212";
+
+              // Game state
+        const targetSequence = ['1', '4', '3'];
+        let currentStep = 0;
+        let numbersCaught = 0;
+        let catcherActive = false;
+        let gameInterval;
+
+        // DOM elements
+        const catcher = document.getElementById('catcher');
+        const gameContainer = document.getElementById('game-container');
+        const sequenceDisplay = document.getElementById('sequence-display');
+        const rewardModal = document.getElementById('reward-modal');
+        const rewardContent = document.querySelector('.reward-content');
+
+        // Initialize game with listeners but don't start
+        document.addEventListener('DOMContentLoaded', function initGame() {
+            // Position catcher
+            catcher.style.left = '30px';
+            catcher.style.bottom = '30px';
+            
+            // Event listeners - game only starts when basket is clicked
+            catcher.addEventListener('click', function() {
+                if (!catcherActive) {
+                    startGame();
+                }
+            });
+        });
+        
+        function startGame() {
+            catcherActive = true;
+            catcher.style.cursor = 'none';
+            sequenceDisplay.style.display = 'block';
+            sequenceDisplay.textContent = `Sequence: Waiting for ${targetSequence[currentStep]}`;
+            document.addEventListener('mousemove', moveCatcher);
+            
+            // Start spawning numbers
+            gameInterval = setInterval(spawnNumber, 1500);
+        }
+        
+        function moveCatcher(e) {
+            if (catcherActive) {
+                catcher.style.left = e.clientX - 50 + 'px';
+                catcher.style.top = e.clientY - 50 + 'px';
+            }
+        }
+        
+        function spawnNumber() {
+            const number = targetSequence[currentStep]; // Only spawn current target number
+            const fallingNumber = document.createElement('div');
+            fallingNumber.className = 'falling-number';
+            
+            // Random position and speed
+            const posX = Math.random() * (window.innerWidth - 40);
+            const speed = 2 + Math.random() * 3; // Random speed between 2-5s
+            
+            fallingNumber.style.left = posX + 'px';
+            fallingNumber.style.animationDuration = speed + 's';
+            fallingNumber.style.backgroundImage = `url('images/no.${number}.png')`; // Set your own number PNG image here
+            
+            // Store the number value as dataset
+            fallingNumber.dataset.value = number;
+            
+            gameContainer.appendChild(fallingNumber);
+            
+            // Remove after animation completes
+            fallingNumber.addEventListener('animationend', () => {
+                fallingNumber.remove();
+            });
+            
+            // Check for collisions
+            const collisionCheck = setInterval(() => {
+                if (!document.body.contains(fallingNumber)) {
+                    clearInterval(collisionCheck);
+                    return;
+                }
+                
+                if (checkCollision(fallingNumber, catcher)) {
+                    handleNumberCaught(fallingNumber.dataset.value);
+                    fallingNumber.remove();
+                    clearInterval(collisionCheck);
+                }
+            }, 16);
+        }
+        
+        function checkCollision(el1, el2) {
+            const rect1 = el1.getBoundingClientRect();
+            const rect2 = el2.getBoundingClientRect();
+            
+            return !(
+                rect1.right < rect2.left || 
+                rect1.left > rect2.right || 
+                rect1.bottom < rect2.top || 
+                rect1.top > rect2.bottom
+            );
+        }
+        
+        function handleNumberCaught(number) {
+            if (number === targetSequence[currentStep]) {
+                numbersCaught++;
+                currentStep++;
+                sequenceDisplay.textContent = `Sequence: Waiting for ${targetSequence[currentStep]}`;
+                
+                if (currentStep >= targetSequence.length) {
+                    showReward();
+                    currentStep = 0;
+                    numbersCaught = 0;
+                }
+            } else {
+                // Wrong number caught - reset sequence
+                currentStep = 0;
+                sequenceDisplay.textContent = `Sequence: Waiting for ${targetSequence[currentStep]}`;
+            }
+        }
+        
+// Function to show the reward modal
+function showReward() {
+    clearInterval(gameInterval); // Stop number spawning
+    catcherActive = false; // Disable catcher movement
+    document.removeEventListener('mousemove', moveCatcher);
+    
+    // Show the reward modal
+    rewardModal.style.display = 'flex';
+    rewardContent.classList.add('show');
+    sequenceDisplay.style.display = 'none'; // Hide sequence display
+
+    // Play the audio when the modal is shown
+   const audioElement = document.getElementById('testAudio');
+   audioElement.play().then(() => {
+       console.log("Audio is playing");
+   }).catch(error => {
+       console.error("Error playing audio:", error);
+   });
+   
+}
+
+// Function to close the reward modal
+function closeReward() {
+    // Hide the reward modal
+    rewardModal.style.display = 'none';
+    rewardContent.classList.remove('show');
+    clearInterval(gameInterval);
+    document.removeEventListener('mousemove', moveCatcher);
+    
+    // Reset catcher position
+    catcher.style.left = '30px';
+    catcher.style.bottom = '30px';
+    catcher.style.top = '';
+    catcherActive = false;
+    catcher.style.cursor = 'pointer';
+
+    // Pause the audio and reset it to the beginning
+    const audioElement = document.getElementById('testAudio');
+    audioElement.pause(); // Pause the audio
+    audioElement.currentTime = 0; // Reset audio to the beginning
+}
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (catcherActive) {
+                const rect = catcher.getBoundingClientRect();
+                catcher.style.left = Math.max(0, Math.min(rect.left, window.innerWidth - 100)) + 'px';
+                catcher.style.top = Math.max(0, Math.min(rect.top, window.innerHeight - 100)) + 'px';
+            }
+        });
+
+        // Create stars
+        function createStars() {
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                const size = Math.random() * 3 + 1; // Random size between 1 and 4
+                star.style.width = size + 'px';
+                star.style.height = size + 'px';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.left = Math.random() * 100 + 'vw';
+                gameContainer.appendChild(star);
+            }
+        }
+
+        createStars(); // Call the function to create stars
+
+
+  </script>
+</body>
+</html>
+
+
+
+ 
+
+
+
